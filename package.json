@@ -1,0 +1,19 @@
+{
+  "name": "fitbuddy",
+  "version": "1.0.0",
+  "description": "FitBuddy – AI Fitness Plan Generator using Gemini Models",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "echo 'Build completed successfully'"
+  },
+  "keywords": [
+    "fitbuddy",
+    "gemini",
+    "fastapi",
+    "fitness",
+    "workout"
+  ],
+  "author": "FitBuddy",
+  "license": "MIT"
+}

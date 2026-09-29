@@ -58,7 +58,7 @@ pip install -r requirements.txt
 cp .env.example .env
 
 # 4. Start the FastAPI development server
-uvicorn FitBuddy.app.main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8000
 
 # 5. Open in browser
 # App: http://localhost:8000

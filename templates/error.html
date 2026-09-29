@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ error_title }} – FitBuddy</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="brand-link">
+        <span>⚡ FitBuddy</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/" class="nav-item">Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" style="display: flex; align-items: center; justify-content: center; min-height: 60vh;">
+    <div class="card" style="max-width: 520px; width: 100%; text-align: center; border-color: rgba(244, 63, 94, 0.3);">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+      <h1 style="font-size: 1.8rem; font-weight: 900; margin-bottom: 0.75rem; color: #fda4af;">
+        {{ error_title }}
+      </h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.6;">
+        {{ error_message }}
+      </p>
+
+      <a href="{{ return_url or '/' }}" class="btn-primary" style="display: inline-flex; width: auto; padding: 0.75rem 2rem;">
+        Return to Safety →
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    <p>FitBuddy &copy; 2026. Built with Google Gemini 2.5 Flash, FastAPI &amp; Vercel Serverless.</p>
+  </footer>
+
+</body>
+</html>

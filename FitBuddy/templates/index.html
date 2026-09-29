@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitBuddy – AI Fitness Plan Generator</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20viewBox=%220%200%20100%20100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="brand-link">
+        <span>⚡ FitBuddy</span>
+        <span class="brand-badge">AI 2.5</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/" class="nav-item">Generator</a>
+        <a href="/view-all-users" class="nav-item">Admin / All Plans</a>
+        <a href="/health" class="nav-item" target="_blank">Health API</a>
+        <a href="/docs" class="nav-item" target="_blank">Docs</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="hero">
+      <span class="hero-tag">Powered by Google Gemini</span>
+      <h1 class="hero-title">Your 7-Day Workout & Nutrition <span>Architect</span></h1>
+      <p class="hero-subtitle">
+        Enter your fitness stats and goals to generate an adaptive, science-backed 7-day training routine, macro guidance, and recovery protocols.
+      </p>
+    </div>
+
+    {% if not api_key_configured %}
+    <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.4); border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem;">
+      <span style="font-size: 1.5rem;">💡</span>
+      <div style="font-size: 0.9rem;">
+        <strong style="color: var(--accent-amber);">Gemini API Key Notice:</strong>
+        <code>GEMINI_API_KEY</code> is running in automatic offline smart mode. Add your key in <code>.env</code> or Vercel Environment Variables to enable live Gemini Flash generation.
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Input Form -->
+    <div class="card">
+      <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span>📋</span> Fitness Assessment
+      </h2>
+
+      <form action="/generate-workout" method="POST" id="fitness-form">
+        <div class="form-grid">
+          
+          <div class="form-group">
+            <label for="user_name">Full Name / Nickname</label>
+            <input type="text" id="user_name" name="user_name" placeholder="e.g. Alex" value="Alex" required>
+          </div>
+
+          <div class="form-group">
+            <label for="age">Age (Years)</label>
+            <input type="number" id="age" name="age" min="14" max="95" value="28" required>
+          </div>
+
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Non-Binary">Non-Binary</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="weight_kg">Weight (kg)</label>
+            <input type="number" id="weight_kg" name="weight_kg" step="0.5" min="35" max="250" value="74" required>
+          </div>
+
+          <div class="form-group">
+            <label for="height_cm">Height (cm)</label>
+            <input type="number" id="height_cm" name="height_cm" min="110" max="230" value="178" required>
+          </div>
+
+          <div class="form-group">
+            <label for="fitness_level">Current Fitness Level</label>
+            <select id="fitness_level" name="fitness_level">
+              <option value="Beginner">Beginner (0-6 months training)</option>
+              <option value="Intermediate" selected>Intermediate (6-24 months training)</option>
+              <option value="Advanced">Advanced (2+ years dedicated)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="fitness_goal">Primary Fitness Goal</label>
+            <select id="fitness_goal" name="fitness_goal" style="border-color: var(--primary); font-weight: 700;">
+              <option value="Weight Loss">Weight Loss & Fat Burn</option>
+              <option value="Muscle Gain" selected>Muscle Gain & Hypertrophy</option>
+              <option value="General Wellness">General Wellness & Longevity</option>
+              <option value="Flexibility">Flexibility & Joint Mobility</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="intensity">Training Intensity</label>
+            <select id="intensity" name="intensity">
+              <option value="Low">Low (Gentle, High Rest)</option>
+              <option value="Medium" selected>Medium (Moderate Challenge)</option>
+              <option value="High">High (Athletic, Demanding)</option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="medical_limitations">Physical Limitations / Injuries / Equipment Notes</label>
+            <textarea id="medical_limitations" name="medical_limitations" rows="2" placeholder="e.g., Mild lower back sensitivity, dumbbells only, no barbell squats..."></textarea>
+          </div>
+
+        </div>
+
+        <button type="submit" class="btn-primary" id="generate-btn">
+          <span>⚡ Generate 7-Day Workout Plan</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Features Overview -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem;">
+      <div class="card" style="padding: 1.5rem; margin-bottom: 0;">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
+        <h3 style="font-size: 1.1rem; margin-bottom: 0.4rem;">4 Target Goals</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Dedicated biomechanical routines for Weight Loss, Muscle Gain, General Wellness, and Flexibility.</p>
+      </div>
+
+      <div class="card" style="padding: 1.5rem; margin-bottom: 0;">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🥗</div>
+        <h3 style="font-size: 1.1rem; margin-bottom: 0.4rem;">Custom Nutrition</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Protein targets, calorie balance, hydration timing, and micronutrients aligned to your metabolism.</p>
+      </div>
+
+      <div class="card" style="padding: 1.5rem; margin-bottom: 0;">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔄</div>
+        <h3 style="font-size: 1.1rem; margin-bottom: 0.4rem;">Adaptive Feedback</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Fine-tune any day's volume, swap exercises, or adjust intensity with real-time AI refinement.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>FitBuddy &copy; 2026. Built with Google Gemini 2.5 Flash, FastAPI &amp; Vercel Serverless.</p>
+  </footer>
+
+</body>
+</html>

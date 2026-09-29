@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ plan.title }} – FitBuddy</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20viewBox=%220%200%20100%20100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="/" class="brand-link">
+        <span>⚡ FitBuddy</span>
+        <span class="brand-badge">AI 2.5</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/" class="nav-item">← New Plan</a>
+        <a href="/view-all-users" class="nav-item">All Plans</a>
+        <a href="/health" class="nav-item" target="_blank">Health API</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Plan Result -->
+  <main class="container">
+
+    {% if just_updated %}
+    <div style="background: rgba(163, 230, 53, 0.15); border: 1px solid var(--primary); border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.8rem;">
+      <span style="font-size: 1.5rem;">✅</span>
+      <div>
+        <strong style="color: var(--primary);">Plan Refined Successfully!</strong>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Gemini has updated your training schedule according to your feedback.</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Plan Header -->
+    <div class="card" style="border-top: 4px solid var(--primary);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <span class="hero-tag">{{ plan.fitness_goal }} • {{ plan.intensity }} Intensity</span>
+          <h1 style="font-size: 2rem; font-weight: 900; margin-top: 0.4rem;">{{ plan.title }}</h1>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.2rem;">
+            Prepared for <strong>{{ plan.user_name }}</strong> • Created: {{ plan.created_at }}
+          </p>
+        </div>
+        <div>
+          <button onclick="window.print()" class="btn-secondary" style="font-size: 0.85rem;">
+            🖨️ Print / Save PDF
+          </button>
+        </div>
+      </div>
+
+      <div style="background: #0d121c; padding: 1.25rem; border-radius: var(--radius-sm); border-left: 3px solid var(--primary); font-size: 0.95rem; line-height: 1.6;">
+        {{ plan.overview }}
+      </div>
+
+      {% if plan.applied_feedback %}
+      <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--accent-cyan); background: rgba(56, 189, 248, 0.08); padding: 0.75rem 1rem; border-radius: var(--radius-sm);">
+        <strong>Latest Adjustment:</strong> "{{ plan.applied_feedback }}"
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- 7-Day Workout Routine Accordion / Cards -->
+    <h2 style="font-size: 1.5rem; font-weight: 900; margin: 2.5rem 0 1.25rem 0; display: flex; align-items: center; gap: 0.6rem;">
+      <span>📅</span> 7-Day Training Schedule
+    </h2>
+
+    {% for day in plan.days %}
+    <div class="day-card">
+      <div class="day-header">
+        <div>
+          <span class="day-number">{{ day.day_title }}</span>
+          <span style="font-size: 0.85rem; color: var(--text-muted); margin-left: 0.75rem;">{{ day.focus }}</span>
+        </div>
+        {% if day.is_rest_day %}
+          <span class="badge badge-rest">Rest &amp; Regeneration</span>
+        {% else %}
+          <span class="day-focus">Active Training</span>
+        {% endif %}
+      </div>
+
+      <div class="day-body">
+        {% if day.warm_up %}
+        <div style="font-size: 0.85rem; margin-bottom: 1rem; color: var(--text-muted); background: rgba(255,255,255,0.02); padding: 0.6rem 0.8rem; border-radius: var(--radius-sm);">
+          <strong style="color: var(--text-main);">🔥 Warm-Up:</strong> {{ day.warm_up }}
+        </div>
+        {% endif %}
+
+        {% if day.exercises and day.exercises|length > 0 %}
+        <table class="exercise-table">
+          <thead>
+            <tr>
+              <th>Exercise</th>
+              <th>Sets</th>
+              <th>Reps / Time</th>
+              <th>Rest</th>
+              <th>Target Muscle</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ex in day.exercises %}
+            <tr>
+              <td>
+                <div class="exercise-name">{{ ex.name }}</div>
+                {% if ex.form_tip %}
+                <div class="exercise-cue">💡 {{ ex.form_tip }}</div>
+                {% endif %}
+              </td>
+              <td><span style="font-weight: 700; color: var(--primary);">{{ ex.sets }}</span></td>
+              <td>{{ ex.reps_or_duration }}</td>
+              <td>{{ ex.rest_seconds }}</td>
+              <td><span style="font-size: 0.8rem; color: var(--accent-cyan);">{{ ex.target_muscle }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p style="color: var(--accent-amber); font-size: 0.9rem; padding: 1rem 0;">
+          🌱 Rest day: Focus on deep sleep, clean hydration, and light tissue mobility.
+        </p>
+        {% endif %}
+
+        {% if day.cool_down %}
+        <div style="font-size: 0.85rem; margin-top: 1rem; color: var(--text-muted); background: rgba(255,255,255,0.02); padding: 0.6rem 0.8rem; border-radius: var(--radius-sm);">
+          <strong style="color: var(--text-main);">❄️ Cool-Down:</strong> {{ day.cool_down }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Nutrition & Recovery Section -->
+    <div class="tips-grid">
+      <!-- Nutrition Tips -->
+      <div class="tip-card" style="border-top: 3px solid var(--primary);">
+        <div class="tip-title">
+          <span>🥗</span>
+          <span>Target Nutrition Strategy</span>
+        </div>
+        <ul>
+          {% for tip in plan.nutrition_tips %}
+          <li>
+            <span class="tip-bullet">✓</span>
+            <span>{{ tip }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- Recovery Tips -->
+      <div class="tip-card" style="border-top: 3px solid var(--accent-cyan);">
+        <div class="tip-title">
+          <span>💤</span>
+          <span>Recovery &amp; Sleep Protocols</span>
+        </div>
+        <ul>
+          {% for tip in plan.recovery_tips %}
+          <li>
+            <span class="tip-bullet" style="color: var(--accent-cyan);">✓</span>
+            <span>{{ tip }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Feedback & Plan Refinement Section -->
+    <div class="feedback-box">
+      <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span>🔄</span> Refine Your Workout Plan with AI
+      </h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
+        Need to swap an exercise, adjust for shoulder soreness, or lower intensity on Day 3? Submit your notes and Gemini will adapt your routine while preserving your goals.
+      </p>
+
+      <form action="/submit-feedback" method="POST">
+        <input type="hidden" name="plan_id" value="{{ plan.plan_id }}">
+        <div class="form-group">
+          <label for="feedback_text">Your Feedback / Requested Changes</label>
+          <textarea id="feedback_text" name="feedback_text" rows="3" placeholder="e.g. Can you swap barbell push-ups for dumbbell bench press? Day 2 feels too long, can we reduce to 30 mins?" required></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary" style="margin-top: 1rem;">
+          <span>⚡ Update Plan with AI Feedback</span>
+        </button>
+      </form>
+    </div>
+
+    <div style="margin-top: 2rem; text-align: center;">
+      <a href="/" class="btn-secondary">← Create Another Plan</a>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>FitBuddy &copy; 2026. Built with Google Gemini 2.5 Flash, FastAPI &amp; Vercel Serverless.</p>
+  </footer>
+
+</body>
+</html>
